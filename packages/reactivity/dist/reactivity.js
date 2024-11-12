@@ -9,6 +9,10 @@ function isObject(value) {
 }
 
 // packages/reactivity/src/effect.ts
+function preCleanEffect(effect2) {
+  effect2._depLength = 0;
+  effect2._trackId++;
+}
 var ReactiveEffect = class {
   constructor(fn, scheduler) {
     this.fn = fn;
@@ -22,7 +26,9 @@ var ReactiveEffect = class {
     if (!this.active) return this.fn();
     let lastReactiveEffect = currentReactiveEffect;
     try {
+      debugger;
       currentReactiveEffect = this;
+      preCleanEffect(this);
       return this.fn();
     } finally {
       currentReactiveEffect = lastReactiveEffect;
@@ -38,13 +44,18 @@ function effect(fn, option) {
   return _effect;
 }
 function trackEffect(effect2, dep) {
+  if (dep.get(effect2) !== effect2._trackId) {
+    dep.set(effect2, effect2._trackId);
+  }
   dep.set(effect2, effect2._trackId);
   effect2.deps[effect2._depLength++] = dep;
-  console.log(targetMap, "targetMap", effect2.deps, "deps");
+  console.log(effect2.deps, "deps");
 }
 function triggerEffects(dep) {
   for (const effect2 of dep.keys()) {
     if (effect2.scheduler) {
+      console.log(effect2, "effect");
+      console.log(targetMap, "targetMap");
       effect2.scheduler();
     }
   }
@@ -60,18 +71,18 @@ var createDep = (cleanup, name) => {
 };
 function track(target, property) {
   if (currentReactiveEffect) {
-    let depsMap = targetMap.get(target);
-    if (!depsMap) {
-      targetMap.set(target, depsMap = /* @__PURE__ */ new Map());
-    }
-    let propertyMap = depsMap.get(property);
+    let propertyMap = targetMap.get(target);
     if (!propertyMap) {
-      depsMap.set(
+      targetMap.set(target, propertyMap = /* @__PURE__ */ new Map());
+    }
+    let depsMap = propertyMap.get(property);
+    if (!depsMap) {
+      propertyMap.set(
         property,
-        propertyMap = createDep(() => propertyMap.delete(property), property)
+        depsMap = createDep(() => depsMap.delete(property), property)
       );
     }
-    trackEffect(currentReactiveEffect, propertyMap);
+    trackEffect(currentReactiveEffect, depsMap);
   }
 }
 function trigger(target, property, newValue, oldValue) {
@@ -81,7 +92,6 @@ function trigger(target, property, newValue, oldValue) {
   }
   const propertyMap = depsMap.get(property);
   if (propertyMap) {
-    console.log(1);
     triggerEffects(propertyMap);
   }
 }

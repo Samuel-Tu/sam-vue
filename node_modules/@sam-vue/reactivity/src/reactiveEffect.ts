@@ -15,20 +15,20 @@ export const createDep = (cleanup: () => void, name: string) => {
 
 export function track(target, property) {
   if (currentReactiveEffect) {
-    let depsMap = targetMap.get(target);
-    if (!depsMap) {
-      targetMap.set(target, (depsMap = new Map()));
+    let propertyMap = targetMap.get(target);
+    if (!propertyMap) {
+      targetMap.set(target, (propertyMap = new Map()));
     }
 
-    let propertyMap = depsMap.get(property);
-    if (!propertyMap) {
-      depsMap.set(
+    let depsMap = propertyMap.get(property);
+    if (!depsMap) {
+      propertyMap.set(
         property,
-        (propertyMap = createDep(() => propertyMap.delete(property), property))
+        (depsMap = createDep(() => depsMap.delete(property), property))
       );
     }
 
-    trackEffect(currentReactiveEffect, propertyMap);
+    trackEffect(currentReactiveEffect, depsMap);
   }
 }
 
@@ -40,7 +40,6 @@ export function trigger(target, property, newValue, oldValue) {
 
   const propertyMap = depsMap.get(property);
   if (propertyMap) {
-    console.log(1);
     triggerEffects(propertyMap);
   }
 }

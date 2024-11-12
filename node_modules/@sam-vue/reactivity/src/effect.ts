@@ -24,8 +24,9 @@ class ReactiveEffect {
     if (!this.active) return this.fn();
     let lastReactiveEffect = currentReactiveEffect;
     try {
+      debugger;
       currentReactiveEffect = this;
-      // preCleanEffect(this);
+      preCleanEffect(this);
       return this.fn();
     } finally {
       currentReactiveEffect = lastReactiveEffect;
@@ -46,27 +47,29 @@ export function effect(fn, option?) {
 }
 
 export function trackEffect(effect, dep) {
-  // if (dep.get(effect) !== effect._trackId) {
-  //   dep.set(effect, effect._trackId);
-  //   const oleDep = effect.deps[effect._depLength];
-  //   if (oleDep !== dep) {
-  //     if (oleDep) {
-  //       cleanDepEffect(dep, effect);
-  //     }
-  //     effect.deps[effect._depLength++] = dep;
-  //   } else {
-  //     effect._depLength++;
-  //   }
-  // }
+  if (dep.get(effect) !== effect._trackId) {
+    dep.set(effect, effect._trackId);
+    //   const oleDep = effect.deps[effect._depLength];
+    //   if (oleDep !== dep) {
+    //     if (oleDep) {
+    //       cleanDepEffect(dep, effect);
+    //     }
+    //     effect.deps[effect._depLength++] = dep;
+    //   } else {
+    //     effect._depLength++;
+    //   }
+  }
   dep.set(effect, effect._trackId);
   effect.deps[effect._depLength++] = dep;
-  console.log(targetMap, "targetMap", effect.deps, "deps");
+  // debugger;
+  console.log(effect.deps, "deps");
 }
 
 export function triggerEffects(dep) {
-  // console.log(dep);
   for (const effect of dep.keys()) {
     if (effect.scheduler) {
+      console.log(effect, "effect");
+      console.log(targetMap, "targetMap");
       effect.scheduler();
     }
   }
