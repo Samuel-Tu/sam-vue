@@ -1,0 +1,16 @@
+{
+  "name": "@sam-vue/shared",
+  "version": "1.0.0",
+  "description": "",
+  "module": "dist/shared.esm-bundler.js",
+  "main": "index.js",
+  "scripts": {
+  },
+  "buildOptions": {
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
+  },
+  "license": "ISC"
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    const app = document.querySelector('#app')
+    // import {reactive, effect} from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+    import {reactive, effect} from './reactivity.js'
+
+    let obj = {name: 'hh', age: 18, flag: true}
+    let a = reactive(obj)
+
+    effect(() => {
+      console.log('runner')
+      app.innerHTML = a.flag ? a.name : a.age
+    })
+
+    setTimeout(() => {
+      a.flag = false
+    }, 1000)
+
+  </script>
+</body>
+</html>
