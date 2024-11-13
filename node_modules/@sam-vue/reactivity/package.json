@@ -1,0 +1,22 @@
+{
+  "name": "@sam-vue/reactivity",
+  "version": "1.0.0",
+  "description": "",
+  "module": "dist/reactivity.esm-bundler.js",
+  "unpkg": "dist/reactivity.global.js",
+  "main": "index.js",
+  "scripts": {},
+  "buildOptions": {
+    "name": "SamVueReactivity",
+    "formats": [
+      "esm-bundler",
+      "esm-browser",
+      "cjs",
+      "global"
+    ]
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@sam-vue/shared": "workspace:*"
+  }
+}
